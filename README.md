@@ -70,77 +70,29 @@ secrets-store-csi-driver is supported only for cluster versions v1.15.0+
 Make sure you already have helm CLI installed. To install the secrets store csi driver:
 
 ```bash
-NAMESPACE=dev
-helm install charts/secrets-store-csi-driver -n csi-secrets-store --namespace $NAMESPACE
+NAMESPACE=csi
+kubectl create ns $NAMESPACE
+helm install csi-secrets-store charts/secrets-store-csi-driver --namespace $NAMESPACE
 ```
 
 Expected output:
 
 ```console
-NAME:   csi-secrets-store
-NAMESPACE: dev
-STATUS: DEPLOYED
-
-RESOURCES:
-==> v1/ClusterRole
-NAME                        AGE
-secretproviderclasses-role  1s
-
-==> v1/ClusterRoleBinding
-NAME                               AGE
-secretproviderclasses-rolebinding  0s
-
-==> v1/DaemonSet
-NAME                                        AGE
-csi-secrets-store-secrets-store-csi-driver  0s
-
-==> v1/Pod(related)
-NAME                                              AGE
-csi-secrets-store-secrets-store-csi-driver-hb8gb  0s
-csi-secrets-store-secrets-store-csi-driver-rk7hg  0s
-
-==> v1/ServiceAccount
-NAME                      AGE
-secrets-store-csi-driver  1s
-
-==> v1beta1/CSIDriver
-NAME                       AGE
-secrets-store.csi.k8s.com  0s
-
-==> v1beta1/CustomResourceDefinition
-NAME                                              AGE
-secretproviderclasses.secrets-store.csi.x-k8s.io  1s
-
-
+NAME: csi-secrets-store
+LAST DEPLOYED: Mon Feb 10 18:59:08 2020
+NAMESPACE: csi
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
 NOTES:
 The Secrets Store CSI Driver is getting deployed to your cluster.
 
 To verify that Secrets Store CSI Driver has started, run:
 
-  kubectl --namespace=dev get pods -l "app=secrets-store-csi-driver"
+  kubectl --namespace=csi get pods -l "app=secrets-store-csi-driver"
 
 Now you can follow these steps https://github.com/deislabs/secrets-store-csi-driver#use-the-secrets-store-csi-driver
 to create a SecretProviderClass resource, and a deployment using the SecretProviderClass.
-
-```
-#### Using Helm without Tiller
-
-You can also template this chart locally without Tiller and apply the result using `kubectl`.
-
-```bash
-helm template charts/secrets-store-csi-driver --name csi-secrets-store --namespace $NAMESPACE > manifest.yml
-kubectl apply -f manifest.yml
-```
-
-
-<details>
-<summary><strong>[ALTERNATIVE DEPLOYMENT OPTION] Using Deployment Yamls</strong></summary>
-
-```bash
-kubectl apply -f deploy/rbac-secretproviderclass.yaml # update the namespace of the secrets-store-csi-driver ServiceAccount
-kubectl apply -f deploy/csidriver.yaml
-kubectl apply -f deploy/secrets-store.csi.x-k8s.io_secretproviderclasses.yaml
-kubectl apply -f deploy/secrets-store-csi-driver.yaml --namespace $NAMESPACE
 ```
 
 To validate the installer is running as expected, run the following commands:
@@ -163,8 +115,6 @@ kubectl get crd
 NAME                                               
 secretproviderclasses.secrets-store.csi.x-k8s.io    
 ```
-
-</details>
 
 ### Use the Secrets Store CSI Driver
 
